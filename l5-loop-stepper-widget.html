@@ -16,16 +16,22 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
 td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
 .out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
-.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.note{font-size:14px;font-style:italic}
 .new{font-size:12px;font-family:Arial}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+button[aria-disabled=true]{opacity:.6;cursor:not-allowed}button[aria-disabled=true]:hover{background:#fff}
+.tw{overflow-x:auto;margin:12px 0}.tw:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sel{font-size:12px;font-weight:bold;margin-left:6px}
+@media (forced-colors:active){button[aria-pressed=true]{border-width:5px;text-decoration:underline}.chip.on{border-width:5px;text-decoration:underline}tr.on td,td.on,.t.on{text-decoration:underline;font-weight:bold}button:focus-visible,select:focus-visible,.tw:focus-visible{outline:3px solid Highlight}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head><body><div class="w">
-<div class="panel"><h2>Stepping through the loop</h2><p class="sub">Each pass sets <code>scenario</code> to the next item in <code>scenarioList</code>, calculates its future value, and stores the result in the dictionary.</p>
+<div class="panel"><h2>Stepping through the loop</h2><p class="sub">Each pass sets <code>scenario</code> to the next item in <code>scenarioList</code>, calculates its future value, and stores the result in the dictionary.</p><p class="note">Keyboard: press Tab to move between the buttons, then Enter or Space to press one.</p>
 <div class="bar"><button id="prev">Previous</button><button id="next">Next pass</button><button id="reset">Reset</button><span id="pass" style="font-weight:bold"></span></div>
 <p style="margin:0 0 4px"><strong class="mono">scenarioList</strong></p><div id="chips"></div>
 <p style="margin:8px 0 2px"><strong>The loop variable</strong></p><p class="mono" id="var" style="margin:0"></p>
 <p style="margin:8px 0 2px"><strong>The calculation</strong></p><p class="mono" id="calc" style="margin:0"></p>
-<table style="margin-top:12px"><caption style="text-align:left;font-weight:bold;padding-bottom:4px">scenarioDetails, "fv" values</caption><thead><tr><th>Scenario</th><th>fv</th><th>Note</th></tr></thead><tbody id="rows" class="mono"></tbody></table>
+<div class="tw" tabindex="0" role="region" aria-label="scenarioDetails, fv values, scrollable"><table style="margin-top:12px"><caption style="text-align:left;font-weight:bold;padding-bottom:4px">scenarioDetails, "fv" values</caption><thead><tr><th>Scenario</th><th>fv</th><th>Note</th></tr></thead><tbody id="rows" class="mono"></tbody></table></div>
 <div class="vh" role="status" aria-live="polite" id="live"></div></div>
 </div>
 <script>
@@ -38,8 +44,8 @@ function draw(){
  $("var").textContent=k===0?"scenario is not set yet":'scenario = "'+N[k-1]+'"';
  $("calc").textContent=k===0?"no calculation yet":"computeFV(...) → "+FV[k-1];
  $("rows").innerHTML=N.map((n,i)=>'<tr'+(i===k-1?' class="on"':'')+'><td>'+n+'</td><td>'+(i<k?FV[i]:"None")+'</td><td>'+(i===k-1?"just stored":"")+'</td></tr>').join("");
- $("prev").disabled=k===0;$("next").disabled=k===3;
+ $("prev").setAttribute("aria-disabled",String(k===0));$("next").setAttribute("aria-disabled",String(k===3));
  $("live").textContent=k===0?"Reset. Loop not started.":"Pass "+k+" of 3. scenario is "+N[k-1]+". Stored "+FV[k-1]+".";
 }
-$("next").onclick=()=>{if(k<3){k++;draw()}};$("prev").onclick=()=>{if(k>0){k--;draw()}};$("reset").onclick=()=>{k=0;draw()};draw();
+$("next").onclick=()=>{if(k<3){k++;draw()}else{$("live").textContent="Already at the last pass."}};$("prev").onclick=()=>{if(k>0){k--;draw()}else{$("live").textContent="Already at the start."}};$("reset").onclick=()=>{k=0;draw()};draw();
 </script></body></html>

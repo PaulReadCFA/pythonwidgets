@@ -16,14 +16,20 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
 td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
 .out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
-.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.note{font-size:14px;font-style:italic}
 .new{font-size:12px;font-family:Arial}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+button[aria-disabled=true]{opacity:.6;cursor:not-allowed}button[aria-disabled=true]:hover{background:#fff}
+.tw{overflow-x:auto;margin:12px 0}.tw:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sel{font-size:12px;font-weight:bold;margin-left:6px}
+@media (forced-colors:active){button[aria-pressed=true]{border-width:5px;text-decoration:underline}.chip.on{border-width:5px;text-decoration:underline}tr.on td,td.on,.t.on{text-decoration:underline;font-weight:bold}button:focus-visible,select:focus-visible,.tw:focus-visible{outline:3px solid Highlight}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head><body><div class="w">
 <div class="panel"><h2>Filtering keeps only the rows where the flag is True</h2>
 <div class="bar"><button id="go">Apply the filter</button><button id="reset">Reset</button></div>
 <p class="out mono" id="code" style="margin:0 0 12px"></p>
-<div style="overflow-x:auto"><table id="t" class="mono"></table></div>
+<div class="tw" tabindex="0" role="region" aria-label="Holdings table, scrollable"><table id="t" class="mono"></table></div>
 <p class="note" id="msg"></p><div class="vh" role="status" aria-live="polite" id="live"></div></div>
 </div>
 <script>
@@ -34,6 +40,6 @@ function draw(){const rows=T.map((t,i)=>({i,t,w:W[i],f:i<2})).filter(r=>!on||r.f
  $("t").innerHTML="<caption style='text-align:left;font-weight:bold;padding-bottom:4px'>"+(on?"exceptions, after filtering":"holdings, before filtering")+"</caption><thead><tr><th>row</th><th>ticker</th><th>portfolio_weight</th><th>concentration_flag</th>"+(on?"":"<th>Result</th>")+"</tr></thead><tbody>"+rows.map(r=>"<tr"+(r.f?' class="on"':"")+"><td>"+r.i+"</td><td>"+r.t+"</td><td>"+r.w+"</td><td>"+(r.f?"True":"False")+"</td>"+(on?"":"<td>"+(r.f?"Kept":"Dropped")+"</td>")+"</tr>").join("")+"</tbody>";
  $("code").textContent=on?'exceptions = holdings[holdings["concentration_flag"]]':'holdings';
  $("msg").textContent=on?"The True rows (AAPL and MSFT) are kept. The other six rows are dropped. The kept rows keep their row labels and all their columns.":"Rows where concentration_flag is True will be kept.";
- $("go").disabled=on;$("live").textContent=on?"Filter applied. Two rows kept: AAPL and MSFT.":"Showing all eight rows.";}
-$("go").onclick=()=>{on=true;draw()};$("reset").onclick=()=>{on=false;draw()};draw();
+ $("go").setAttribute("aria-disabled",String(on));$("live").textContent=on?"Filter applied. Two rows kept: AAPL and MSFT.":"Showing all eight rows.";}
+$("go").onclick=()=>{if(!on){on=true;draw()}};$("reset").onclick=()=>{on=false;draw()};draw();
 </script></body></html>

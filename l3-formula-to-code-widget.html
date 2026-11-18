@@ -16,21 +16,27 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
 td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
 .out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
-.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.note{font-size:14px;font-style:italic}
 .new{font-size:12px;font-family:Arial}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+button[aria-disabled=true]{opacity:.6;cursor:not-allowed}button[aria-disabled=true]:hover{background:#fff}
+.tw{overflow-x:auto;margin:12px 0}.tw:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sel{font-size:12px;font-weight:bold;margin-left:6px}
+@media (forced-colors:active){button[aria-pressed=true]{border-width:5px;text-decoration:underline}.chip.on{border-width:5px;text-decoration:underline}tr.on td,td.on,.t.on{text-decoration:underline;font-weight:bold}button:focus-visible,select:focus-visible,.tw:focus-visible{outline:3px solid Highlight}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head><body><div class="w">
-<div class="panel"><h2>From the formula to the code</h2><p class="sub">Choose a number to see which symbol and which variable match.</p>
+<div class="panel"><h2>From the formula to the code</h2><p class="sub">Choose a number to see which symbol and which variable match.</p><p class="note">Keyboard: press Tab to move between the buttons, then Enter or Space to choose one.</p>
 <div class="bar" role="group" aria-label="Choose a symbol"><button data-n="1" aria-pressed="false">1 FV<sub>t</sub></button><button data-n="2" aria-pressed="false">2 PV<sub>0</sub></button><button data-n="3" aria-pressed="false">3 r</button><button data-n="4" aria-pressed="false">4 t</button><button id="all" aria-pressed="false">Show all</button></div>
 <p style="margin:0 0 4px"><strong>Formula</strong></p>
 <div class="out" style="font:28px/1.8 Georgia,serif;text-align:center;background:#fff"><span class="t" data-n="1">FV<sub>t</sub></span> = <span class="t" data-n="2">PV<sub>0</sub></span> &times; (1 + <span class="t" data-n="3">r</span>)<sup><span class="t" data-n="4">t</span></sup></div>
 <p style="margin:12px 0 4px"><strong>Code</strong></p>
 <pre class="out mono" style="margin:0;overflow-x:auto;background:#fff" tabindex="0"><span class="t" data-n="1">assetsAtRetirement</span> = <span class="t" data-n="2">currentSavings</span> * (1 + <span class="t" data-n="3">rate</span>)**<span class="t" data-n="4">yearsUntilRetirement</span></pre>
-<table style="margin-top:12px"><caption style="text-align:left;font-weight:bold;padding-bottom:4px">Each symbol and its variable</caption><thead><tr><th>No.</th><th>Symbol</th><th>Meaning</th><th>Variable in the code</th></tr></thead><tbody>
-<tr data-n="1"><td>1</td><td>FV<sub>t</sub></td><td>The future value at time t</td><td class="mono">assetsAtRetirement</td></tr>
-<tr data-n="2"><td>2</td><td>PV<sub>0</sub></td><td>The present value: the savings today</td><td class="mono">currentSavings</td></tr>
-<tr data-n="3"><td>3</td><td>r</td><td>The annual return, as a decimal</td><td class="mono">rate</td></tr>
-<tr data-n="4"><td>4</td><td>t</td><td>The number of years</td><td class="mono">yearsUntilRetirement</td></tr></tbody></table>
+<div class="tw" tabindex="0" role="region" aria-label="Each symbol and its variable, scrollable"><table style="margin-top:12px"><caption style="text-align:left;font-weight:bold;padding-bottom:4px">Each symbol and its variable</caption><thead><tr><th>No.</th><th>Symbol</th><th>Meaning</th><th>Variable in the code</th></tr></thead><tbody>
+<tr data-n="1"><td>1<span class="sel"></span></td><td>FV<sub>t</sub></td><td>The future value at time t</td><td class="mono">assetsAtRetirement</td></tr>
+<tr data-n="2"><td>2<span class="sel"></span></td><td>PV<sub>0</sub></td><td>The present value: the savings today</td><td class="mono">currentSavings</td></tr>
+<tr data-n="3"><td>3<span class="sel"></span></td><td>r</td><td>The annual return, as a decimal</td><td class="mono">rate</td></tr>
+<tr data-n="4"><td>4<span class="sel"></span></td><td>t</td><td>The number of years</td><td class="mono">yearsUntilRetirement</td></tr></tbody></table></div>
 <div class="vh" role="status" aria-live="polite" id="live"></div></div>
 <style>.t.on{background:var(--lb);border-bottom:3px solid var(--navy);font-weight:bold}</style>
 </div>
@@ -39,6 +45,7 @@ td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{ba
 const M={1:["FV sub t","assetsAtRetirement"],2:["PV sub 0","currentSavings"],3:["r","rate"],4:["t","yearsUntilRetirement"]};
 const btn=[...document.querySelectorAll("button[data-n]")];
 function show(sel){document.querySelectorAll(".t,tr[data-n]").forEach(e=>e.classList.toggle("on",sel.includes(+e.dataset.n)));
+ document.querySelectorAll("tr[data-n] .sel").forEach(e=>e.textContent=e.closest("tr").classList.contains("on")?" (selected)":"");
  btn.forEach(b=>b.setAttribute("aria-pressed",sel.length===1&&sel[0]==+b.dataset.n));
  document.getElementById("all").setAttribute("aria-pressed",sel.length===4);
  document.getElementById("live").textContent=sel.length===1?M[sel[0]][0]+" matches the variable "+M[sel[0]][1]+".":sel.length===4?"All four pairs shown.":"";}

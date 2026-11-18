@@ -16,13 +16,19 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
 td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
 .out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
-.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.note{font-size:14px;font-style:italic}
 .new{font-size:12px;font-family:Arial}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+button[aria-disabled=true]{opacity:.6;cursor:not-allowed}button[aria-disabled=true]:hover{background:#fff}
+.tw{overflow-x:auto;margin:12px 0}.tw:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sel{font-size:12px;font-weight:bold;margin-left:6px}
+@media (forced-colors:active){button[aria-pressed=true]{border-width:5px;text-decoration:underline}.chip.on{border-width:5px;text-decoration:underline}tr.on td,td.on,.t.on{text-decoration:underline;font-weight:bold}button:focus-visible,select:focus-visible,.tw:focus-visible{outline:3px solid Highlight}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head><body><div class="w">
-<div class="panel"><h2>How the table of positions grows, one column at a time</h2><p class="sub">Each step adds one column. The rows stay the same: one row for each of the eight positions.</p>
+<div class="panel"><h2>How the table of positions grows, one column at a time</h2><p class="sub">Each step adds one column. The rows stay the same: one row for each of the eight positions.</p><p class="note">Keyboard: press Tab to move between the buttons, then Enter or Space to press one.</p>
 <div class="bar"><button id="prev">Previous step</button><button id="next">Next step</button><button id="reset">Reset</button><span id="step" style="font-weight:bold"></span></div>
-<div style="overflow-x:auto"><table id="t" class="mono"></table></div>
+<div class="tw" tabindex="0" role="region" aria-label="Portfolio table, scrollable"><table id="t" class="mono"></table></div>
 <p class="note" id="msg"></p><div class="vh" role="status" aria-live="polite" id="live"></div></div>
 </div>
 <script>
@@ -35,6 +41,6 @@ let s=1;const $=i=>document.getElementById(i);
 function draw(){const n=3+s;
  $("t").innerHTML="<thead><tr><th>row</th>"+C.slice(0,n).map((c,j)=>"<th>"+c[0]+(j===n-1&&s>1?' <span class="new">(new)</span>':"")+"</th>").join("")+"</tr></thead><tbody>"+T.map((_,i)=>"<tr><td>"+i+"</td>"+C.slice(0,n).map((c,j)=>"<td"+(j===n-1&&s>1?' class="on"':"")+">"+c[1](i)+"</td>").join("")+"</tr>").join("")+"</tbody>";
  $("step").textContent="Step "+s+" of 4";$("msg").textContent=ST[s-1];$("live").textContent="Step "+s+" of 4. "+ST[s-1]+".";
- $("prev").disabled=s===1;$("next").disabled=s===4;}
-$("next").onclick=()=>{if(s<4){s++;draw()}};$("prev").onclick=()=>{if(s>1){s--;draw()}};$("reset").onclick=()=>{s=1;draw()};draw();
+ $("prev").setAttribute("aria-disabled",String(s===1));$("next").setAttribute("aria-disabled",String(s===4));}
+$("next").onclick=()=>{if(s<4){s++;draw()}else{$("live").textContent="Already at the last step."}};$("prev").onclick=()=>{if(s>1){s--;draw()}else{$("live").textContent="Already at the first step."}};$("reset").onclick=()=>{s=1;draw()};draw();
 </script></body></html>
