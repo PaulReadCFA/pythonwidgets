@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boolean filter</title>
+<style>
+:root{--navy:#06005A;--lb:#B4C8FF;--cream:#F7ECDE;--grey:#757982;--blue:#4476FF}
+*{box-sizing:border-box}body{margin:0;padding:16px;font:16px/1.5 Arial,Helvetica,sans-serif;color:#000;background:#fff}
+.w{max-width:1000px;margin:0 auto}.panel{border:2px solid var(--navy);border-radius:6px;padding:12px 16px;background:#fff;margin:0 0 12px}
+h2{margin:0 0 4px;font-size:20px}.sub{margin:0 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;align-items:center}
+button,select{font:700 16px Arial,sans-serif;padding:8px 14px;border-radius:4px;border:2px solid var(--navy);background:#fff;color:#000;cursor:pointer;min-height:44px}
+button:hover:not(:disabled),select:hover{background:var(--lb)}button:disabled{opacity:.45;cursor:not-allowed}
+button[aria-pressed=true]{background:var(--navy);color:#fff}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mono{font-family:Consolas,Menlo,Monaco,'Liberation Mono','Courier New',monospace}
+.chip{display:inline-block;border:2px solid var(--navy);border-radius:4px;background:var(--cream);padding:3px 8px;margin:0 6px 6px 0;font-size:14px}
+.chip.on{background:var(--lb);border-width:3px;font-weight:bold}
+table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
+td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
+.out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
+.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.new{font-size:12px;font-family:Arial}
+</style>
+</head><body><div class="w">
+<div class="panel"><h2>Filtering keeps only the rows where the flag is True</h2>
+<div class="bar"><button id="go">Apply the filter</button><button id="reset">Reset</button></div>
+<p class="out mono" id="code" style="margin:0 0 12px"></p>
+<div style="overflow-x:auto"><table id="t" class="mono"></table></div>
+<p class="note" id="msg"></p><div class="vh" role="status" aria-live="polite" id="live"></div></div>
+</div>
+<script>
+
+const T=["AAPL","MSFT","JPM","JNJ","XOM","NEE","BAC","WMT"],W=["0.174038","0.226598","0.124426","0.128407","0.104258","0.093394","0.075889","0.072991"];
+const $=i=>document.getElementById(i);let on=false;
+function draw(){const rows=T.map((t,i)=>({i,t,w:W[i],f:i<2})).filter(r=>!on||r.f);
+ $("t").innerHTML="<caption style='text-align:left;font-weight:bold;padding-bottom:4px'>"+(on?"exceptions, after filtering":"holdings, before filtering")+"</caption><thead><tr><th>row</th><th>ticker</th><th>portfolio_weight</th><th>concentration_flag</th>"+(on?"":"<th>Result</th>")+"</tr></thead><tbody>"+rows.map(r=>"<tr"+(r.f?' class="on"':"")+"><td>"+r.i+"</td><td>"+r.t+"</td><td>"+r.w+"</td><td>"+(r.f?"True":"False")+"</td>"+(on?"":"<td>"+(r.f?"Kept":"Dropped")+"</td>")+"</tr>").join("")+"</tbody>";
+ $("code").textContent=on?'exceptions = holdings[holdings["concentration_flag"]]':'holdings';
+ $("msg").textContent=on?"The True rows (AAPL and MSFT) are kept. The other six rows are dropped. The kept rows keep their row labels and all their columns.":"Rows where concentration_flag is True will be kept.";
+ $("go").disabled=on;$("live").textContent=on?"Filter applied. Two rows kept: AAPL and MSFT.":"Showing all eight rows.";}
+$("go").onclick=()=>{on=true;draw()};$("reset").onclick=()=>{on=false;draw()};draw();
+</script></body></html>

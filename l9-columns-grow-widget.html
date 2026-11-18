@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Table grows by column</title>
+<style>
+:root{--navy:#06005A;--lb:#B4C8FF;--cream:#F7ECDE;--grey:#757982;--blue:#4476FF}
+*{box-sizing:border-box}body{margin:0;padding:16px;font:16px/1.5 Arial,Helvetica,sans-serif;color:#000;background:#fff}
+.w{max-width:1000px;margin:0 auto}.panel{border:2px solid var(--navy);border-radius:6px;padding:12px 16px;background:#fff;margin:0 0 12px}
+h2{margin:0 0 4px;font-size:20px}.sub{margin:0 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;align-items:center}
+button,select{font:700 16px Arial,sans-serif;padding:8px 14px;border-radius:4px;border:2px solid var(--navy);background:#fff;color:#000;cursor:pointer;min-height:44px}
+button:hover:not(:disabled),select:hover{background:var(--lb)}button:disabled{opacity:.45;cursor:not-allowed}
+button[aria-pressed=true]{background:var(--navy);color:#fff}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mono{font-family:Consolas,Menlo,Monaco,'Liberation Mono','Courier New',monospace}
+.chip{display:inline-block;border:2px solid var(--navy);border-radius:4px;background:var(--cream);padding:3px 8px;margin:0 6px 6px 0;font-size:14px}
+.chip.on{background:var(--lb);border-width:3px;font-weight:bold}
+table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
+td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
+.out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
+.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.new{font-size:12px;font-family:Arial}
+</style>
+</head><body><div class="w">
+<div class="panel"><h2>How the table of positions grows, one column at a time</h2><p class="sub">Each step adds one column. The rows stay the same: one row for each of the eight positions.</p>
+<div class="bar"><button id="prev">Previous step</button><button id="next">Next step</button><button id="reset">Reset</button><span id="step" style="font-weight:bold"></span></div>
+<div style="overflow-x:auto"><table id="t" class="mono"></table></div>
+<p class="note" id="msg"></p><div class="vh" role="status" aria-live="polite" id="live"></div></div>
+</div>
+<script>
+
+const T=["AAPL","MSFT","JPM","JNJ","XOM","NEE","BAC","WMT"],S=["Information Technology","Information Technology","Financials","Health Care","Energy","Utilities","Financials","Consumer Staples"],Q=[546,392,404,561,634,918,1323,533],P=[229.5,416.2,221.75,164.8,118.4,73.25,41.3,98.6];
+const V=Q.map((q,i)=>q*P[i]),TOT=V.reduce((a,b)=>a+b,0),W=V.map(v=>v/TOT),F=W.map(w=>w>0.15);
+const C=[["ticker",i=>T[i]],["sector",i=>S[i]],["quantity",i=>Q[i]],["current_price",i=>P[i].toFixed(2)],["position_value",i=>V[i].toFixed(1)],["portfolio_weight",i=>W[i].toFixed(6)],["concentration_flag",i=>F[i]?"True":"False"]];
+const ST=["Load the file (Lesson 8): 4 columns","Calculate every position value: adds position_value","Calculate the weights: adds portfolio_weight","Flag the concentrated positions: adds concentration_flag"];
+let s=1;const $=i=>document.getElementById(i);
+function draw(){const n=3+s;
+ $("t").innerHTML="<thead><tr><th>row</th>"+C.slice(0,n).map((c,j)=>"<th>"+c[0]+(j===n-1&&s>1?' <span class="new">(new)</span>':"")+"</th>").join("")+"</tr></thead><tbody>"+T.map((_,i)=>"<tr><td>"+i+"</td>"+C.slice(0,n).map((c,j)=>"<td"+(j===n-1&&s>1?' class="on"':"")+">"+c[1](i)+"</td>").join("")+"</tr>").join("")+"</tbody>";
+ $("step").textContent="Step "+s+" of 4";$("msg").textContent=ST[s-1];$("live").textContent="Step "+s+" of 4. "+ST[s-1]+".";
+ $("prev").disabled=s===1;$("next").disabled=s===4;}
+$("next").onclick=()=>{if(s<4){s++;draw()}};$("prev").onclick=()=>{if(s>1){s--;draw()}};$("reset").onclick=()=>{s=1;draw()};draw();
+</script></body></html>

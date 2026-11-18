@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Formula to code</title>
+<style>
+:root{--navy:#06005A;--lb:#B4C8FF;--cream:#F7ECDE;--grey:#757982;--blue:#4476FF}
+*{box-sizing:border-box}body{margin:0;padding:16px;font:16px/1.5 Arial,Helvetica,sans-serif;color:#000;background:#fff}
+.w{max-width:1000px;margin:0 auto}.panel{border:2px solid var(--navy);border-radius:6px;padding:12px 16px;background:#fff;margin:0 0 12px}
+h2{margin:0 0 4px;font-size:20px}.sub{margin:0 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;align-items:center}
+button,select{font:700 16px Arial,sans-serif;padding:8px 14px;border-radius:4px;border:2px solid var(--navy);background:#fff;color:#000;cursor:pointer;min-height:44px}
+button:hover:not(:disabled),select:hover{background:var(--lb)}button:disabled{opacity:.45;cursor:not-allowed}
+button[aria-pressed=true]{background:var(--navy);color:#fff}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mono{font-family:Consolas,Menlo,Monaco,'Liberation Mono','Courier New',monospace}
+.chip{display:inline-block;border:2px solid var(--navy);border-radius:4px;background:var(--cream);padding:3px 8px;margin:0 6px 6px 0;font-size:14px}
+.chip.on{background:var(--lb);border-width:3px;font-weight:bold}
+table{border-collapse:collapse;width:100%}th{background:var(--navy);color:#fff;text-align:left;padding:5px 9px;font-size:14px;border:1px solid var(--navy)}
+td{padding:5px 9px;border:1px solid var(--grey);font-size:14px}tr.on td,td.on{background:var(--lb);font-weight:bold}
+.out{font-size:18px;padding:10px 14px;border:2px solid var(--navy);border-radius:6px;background:var(--cream)}
+.vh{position:absolute;left:-9999px}.note{font-size:14px;font-style:italic}
+.new{font-size:12px;font-family:Arial}
+</style>
+</head><body><div class="w">
+<div class="panel"><h2>From the formula to the code</h2><p class="sub">Choose a number to see which symbol and which variable match.</p>
+<div class="bar" role="group" aria-label="Choose a symbol"><button data-n="1" aria-pressed="false">1 FV<sub>t</sub></button><button data-n="2" aria-pressed="false">2 PV<sub>0</sub></button><button data-n="3" aria-pressed="false">3 r</button><button data-n="4" aria-pressed="false">4 t</button><button id="all" aria-pressed="false">Show all</button></div>
+<p style="margin:0 0 4px"><strong>Formula</strong></p>
+<div class="out" style="font:28px/1.8 Georgia,serif;text-align:center;background:#fff"><span class="t" data-n="1">FV<sub>t</sub></span> = <span class="t" data-n="2">PV<sub>0</sub></span> &times; (1 + <span class="t" data-n="3">r</span>)<sup><span class="t" data-n="4">t</span></sup></div>
+<p style="margin:12px 0 4px"><strong>Code</strong></p>
+<pre class="out mono" style="margin:0;overflow-x:auto;background:#fff" tabindex="0"><span class="t" data-n="1">assetsAtRetirement</span> = <span class="t" data-n="2">currentSavings</span> * (1 + <span class="t" data-n="3">rate</span>)**<span class="t" data-n="4">yearsUntilRetirement</span></pre>
+<table style="margin-top:12px"><caption style="text-align:left;font-weight:bold;padding-bottom:4px">Each symbol and its variable</caption><thead><tr><th>No.</th><th>Symbol</th><th>Meaning</th><th>Variable in the code</th></tr></thead><tbody>
+<tr data-n="1"><td>1</td><td>FV<sub>t</sub></td><td>The future value at time t</td><td class="mono">assetsAtRetirement</td></tr>
+<tr data-n="2"><td>2</td><td>PV<sub>0</sub></td><td>The present value: the savings today</td><td class="mono">currentSavings</td></tr>
+<tr data-n="3"><td>3</td><td>r</td><td>The annual return, as a decimal</td><td class="mono">rate</td></tr>
+<tr data-n="4"><td>4</td><td>t</td><td>The number of years</td><td class="mono">yearsUntilRetirement</td></tr></tbody></table>
+<div class="vh" role="status" aria-live="polite" id="live"></div></div>
+<style>.t.on{background:var(--lb);border-bottom:3px solid var(--navy);font-weight:bold}</style>
+</div>
+<script>
+
+const M={1:["FV sub t","assetsAtRetirement"],2:["PV sub 0","currentSavings"],3:["r","rate"],4:["t","yearsUntilRetirement"]};
+const btn=[...document.querySelectorAll("button[data-n]")];
+function show(sel){document.querySelectorAll(".t,tr[data-n]").forEach(e=>e.classList.toggle("on",sel.includes(+e.dataset.n)));
+ btn.forEach(b=>b.setAttribute("aria-pressed",sel.length===1&&sel[0]==+b.dataset.n));
+ document.getElementById("all").setAttribute("aria-pressed",sel.length===4);
+ document.getElementById("live").textContent=sel.length===1?M[sel[0]][0]+" matches the variable "+M[sel[0]][1]+".":sel.length===4?"All four pairs shown.":"";}
+btn.forEach(b=>b.onclick=()=>show([+b.dataset.n]));document.getElementById("all").onclick=()=>show([1,2,3,4]);show([1]);
+</script></body></html>
